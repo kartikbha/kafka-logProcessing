@@ -34,9 +34,9 @@ public class KafkaLogAnalysisTopology {
 			TopologyBuilder builder = new TopologyBuilder();
 			// Topology configuration
 			Config conf = new Config();
-			conf.setNumAckers(500);
-			conf.setMessageTimeoutSecs(3000);
-			conf.setMaxSpoutPending(30000);
+			
+			conf.setMessageTimeoutSecs(30000);
+			conf.setMaxSpoutPending(500000);
 			conf.setDebug(false);
 
 			int kafkaReadingSpoutExecutor = 1;
@@ -52,33 +52,46 @@ public class KafkaLogAnalysisTopology {
 
 			int persistanceBoltExector = 1;
 			int persistanceBoltTask = 1;
-
 			int worker = 4;
+	        int acker = 10;
+			
 			System.out.println(" args.length " + args.length);
-
-			if (args.length != 0) {
-				if (args.length != 9) {
+            if (args.length != 0) {
+				if (args.length != 11) {
 					throw new Exception(
-							"Needed  total 9 arguments to run in cluster mode else don't give any args.");
+							"Needed  total 11 arguments to run in cluster mode else don't give any args.");
 				}
 			}
 			if (args != null && args.length > 0) {
 
-				kafkaMsgBoltExecutor = Integer.parseInt(args[0]);
-				kafkaMsgBoltTask = Integer.parseInt(args[1]);
-				aggregatorBoltExecutor = Integer.parseInt(args[2]);
-				aggregatorBoltTask = Integer.parseInt(args[3]);
-				persistancePrepreationBoltExecutor = Integer.parseInt(args[4]);
-				persistancePrepreationBoltTask = Integer.parseInt(args[5]);
+				kafkaReadingSpoutExecutor  = Integer.parseInt(args[0]);
+				
+				kafkaMsgBoltExecutor = Integer.parseInt(args[1]);
+				kafkaMsgBoltTask = Integer.parseInt(args[2]);
+				
+				aggregatorBoltExecutor = Integer.parseInt(args[3]);
+				aggregatorBoltTask = Integer.parseInt(args[4]);
+				
+				persistancePrepreationBoltExecutor = Integer.parseInt(args[5]);
+				persistancePrepreationBoltTask = Integer.parseInt(args[6]);
 
-				persistanceBoltExector = Integer.parseInt(args[6]);
-				persistanceBoltTask = Integer.parseInt(args[7]);
-				worker = Integer.parseInt(args[8]);
-
+				persistanceBoltExector = Integer.parseInt(args[7]);
+				persistanceBoltTask = Integer.parseInt(args[8]);
+				
+				worker = Integer.parseInt(args[9]);
+				
+				acker = Integer.parseInt(args[10]);
+				
 			}
-
+			
+			conf.setNumAckers(acker);
 			conf.setNumWorkers(worker);
-			BrokerHosts brokerHosts = new ZkHosts(
+			
+			conf.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE,16384);
+            conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE,16384);
+         
+			
+            BrokerHosts brokerHosts = new ZkHosts(
 					"ec2-54-237-148-55.compute-1.amazonaws.com:2181");
 
 			SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts,

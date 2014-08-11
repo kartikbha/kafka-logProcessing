@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.poc</groupId>
 	<artifactId>kafka-logProcessing2</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>kafka-logProcessing2</name>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
